@@ -90,9 +90,16 @@ function calculate_score(hand) {
 }
 
 // This function updates the UI
+// This function updates the UI
 function update_ui() {
-    // Render Player Cards
+    // --- Render Player Area ---
     player_cards.innerHTML = "";
+    
+    // Create the "x + y + z" breakdown string
+    const player_values = player_hand.map(card => get_card_value(card));
+    const player_breakdown = player_values.join(" + ");
+    const player_final_score = calculate_score(player_hand);
+
     player_hand.forEach(card => {
         const color_class = (card.suit === "hearts" || card.suit === "diamonds") ? "red" : "black";
         player_cards.innerHTML += `
@@ -100,9 +107,15 @@ function update_ui() {
                 ${card.value}<br>${card.symbol}
             </div>`;
     });
-    player_score.textContent = calculate_score(player_hand);
 
-    // Render Dealer Cards
+    // Update Player Score with the breakdown format
+    if (player_hand.length > 0) {
+        player_score.textContent = `${player_breakdown} = ${player_final_score}`;
+    } else {
+        player_score.textContent = "0";
+    }
+
+    // --- Render Dealer Area ---
     dealer_cards.innerHTML = "";
     if (!game_over) {
         if (dealer_hand.length > 0) {
@@ -119,6 +132,11 @@ function update_ui() {
             dealer_score.textContent = `${first_card_val} + ? = ?`;
         }
     } else {
+        // Create the dealer breakdown for when the game is over
+        const dealer_values = dealer_hand.map(card => get_card_value(card));
+        const dealer_breakdown = dealer_values.join(" + ");
+        const dealer_final_score = calculate_score(dealer_hand);
+
         dealer_hand.forEach(card => {
             const color_class = (card.suit === "hearts" || card.suit === "diamonds") ? "red" : "black";
             dealer_cards.innerHTML += `
@@ -126,7 +144,7 @@ function update_ui() {
                     ${card.value}<br>${card.symbol}
                 </div>`;
         });
-        dealer_score.textContent = calculate_score(dealer_hand);
+        dealer_score.textContent = `${dealer_breakdown} = ${dealer_final_score}`;
     }
 }
 
