@@ -87,7 +87,7 @@ function shuffle_deck(deck) {
         const j = Math.floor(Math.random() * (i + 1));
 
         // swaps i and j
-        [array[i], array[j]] = [array[j], array[i]];
+        [deck[i], deck[j]] = [deck[j], deck[i]];
     }
 
     return deck;
@@ -110,14 +110,14 @@ function calculate_score(hand) {
         else if (value === "Jack" || value === "Queen" || value === "King") {
             sum += 10;
         }
-        
+
         // adds the normal cards
         else {
-            sum += value
+            sum += value;
         }
     }
 
-    sum += (aces*11);
+    sum += (aces * 11);
 
     while (sum > 21 && aces > 0) {
         sum -= 10;
@@ -127,23 +127,18 @@ function calculate_score(hand) {
 }
 
 // 
-function update_ui() {
-    // TODO: Render the cards to the DOM and update the score spans
-
+function update_ui(p_score, d_score) {
+    player_score.textContent = p_score;
+    dealer_score.textContent = d_score;
 }
 
 // Function for checking end condition
-function check_end_condition(d_score, p_score) {
+function check_end_condition(score) {
 
-    // TODO: Determine if someone busted or got 21, update message, and end game
-
-    // checks the player score
-    if ((d_score || p_score) > 21) {
-        // END GAME!
-    }
-
-    if ()
-
+    if (score == 0)
+        return true;
+    else
+        return score > 21;
 }
 
 
@@ -151,29 +146,102 @@ function check_end_condition(d_score, p_score) {
 function start_game() {
     // TODO: Reset hands, create/shuffle deck, deal initial two cards to each
 
+    // lowers game over flag
+    game_over = false;
+
+    // Resets the deck and shuffles it
+    deck = create_deck(deck);
+    deck = shuffle_deck(deck);
+
+    // Resets the scores
+    player_hand = [];
+    dealer_hand = [];
+
+    // Deals two cards for each party
+    hit(player_hand);
+    hit(dealer_hand);
+    hit(player_hand);
+    hit(dealer_hand);
+
     // Enable/Disable buttons
     deal_btn.disabled = true;
     hit_btn.disabled = false;
     stand_btn.disabled = false;
-    message_el.textContent = "Game on! Hit or Stand?";
+    message.textContent = "Hit or Stand?";
 }
 
-function hit() {
+function hit(hand) {
     if (game_over) return;
-    // TODO: Pop a card from deck, push to player_hand, calculate score, check for bust
+
+    // pops the last card from the deck and pushes it into a hand
+    const card = deck.pop();
+    hand.push(card);
+
+    let cur_p_score = calculate_score(player_hand);
+    let cur_d_score = calculate_score(dealer_hand);
+
+    // checks for game ending conditions
+    if (check_end_condition(calculate_score(hand))) {
+        const final_p_score = cur_p_score;
+        const final_d_score = cur_d_score;
+        final_result(final_p_score, final_d_score);
+
+        return;
+    }
+
+    // updates the UI
+    update_ui(cur_p_score, cur_d_score);
+
+    return hand;
 }
 
 function stand() {
     if (game_over) return;
     // TODO: Dealer reveals hidden card, hits until score >= 17, then determine winner
 
+
+    while (calculate_score(dealer_hand) < 17) {
+        hit(dealer_hand);
+    }
+
+    const final_p_score = calculate_score(player_hand);
+    const final_d_score = calculate_score(dealer_hand);
+
+    final_result(final_p_score, final_d_score);
+    return;
+}
+
+// This function determines the outcome of the game
+function final_result(p_score, d_score) {
+
+    // resets game flag, buttons and text.
     game_over = true;
     hit_btn.disabled = true;
     stand_btn.disabled = true;
-    deal_btn.disabled = false; // Allow playing again
+    deal_btn.disabled = false;
+
+    // determines the winner
+    if (p_score > 21)
+        message.textContent = `Bust! You have ${p_score}. Dealer wins!`;
+
+    else if (d_score > 21)
+        message.textContent = `Dealer busts with ${d_score}! You win!`;
+
+    else if (p_score > d_score)
+        message.textContent = `You have ${p_score} vs Dealer's ${d_score}. You win!`;
+
+    else if (p_score < d_score)
+        message.textContent = `Dealer wins with ${d_score} vs your ${p_score}.`;
+
+    else
+        message.textContent = `It's a Push! Both have ${p_score}.`;
+
+    // message.textContent = 'Press "Deal" to start playing!';
+
+    return;
 }
 
 // Event listeners
 deal_btn.addEventListener('click', start_game);
-hit_btn.addEventListener('click', hit);
+hit_btn.addEventListener('click', () => hit(player_hand));
 stand_btn.addEventListener('click', stand);
