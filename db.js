@@ -1,26 +1,17 @@
 const STORAGE_KEY = "blackjack_game_state";
 
-/**
- * Retrieves the saved game state from localStorage.
- * @returns {Object|null} The state object or null if no game is saved.
- */
+// This function loads game state from storage
 function get_game_state() {
     const data_str = localStorage.getItem(STORAGE_KEY);
-    
+
     if (data_str) {
         return JSON.parse(data_str);
     }
-    
+
     return null;
 }
 
-/**
- * Saves the current variables into a single state object in localStorage.
- * @param {Array} deck - Current remaining cards.
- * @param {Array} player_hand - Current player cards.
- * @param {Array} dealer_hand - Current dealer cards.
- * @param {boolean} game_over - Current status of the round.
- */
+// This function saves game state to storage
 function save_game_state(deck, player_hand, dealer_hand, game_over) {
     const state = {
         deck: deck,
@@ -33,9 +24,7 @@ function save_game_state(deck, player_hand, dealer_hand, game_over) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-/**
- * Clears the saved game (usually called when a round ends or a new game starts).
- */
+// This function removes game state from storage
 function clear_game_state() {
     // ניקיון פסח
     localStorage.removeItem(STORAGE_KEY);

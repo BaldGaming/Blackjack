@@ -1,77 +1,169 @@
+/* ROOT VARIABLES */
+:root {
+    --table-green: #0a4d20;
+    --felt-gradient: radial-gradient(circle, #127334 0%, #073d1a 100%);
+    --card-white: #ffffff;
+    --gold-accent: #d4af37;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+}
+
+/* BODY STYLING */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    text-align: center;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: var(--table-green);
+    background: var(--felt-gradient);
+    color: white;
     margin: 0;
-    padding: 20px;
-}
-
-#game_container {
-    max-width: 600px;
-    margin: 0 auto;
-    background: white;
-    padding: 20px;
-    border_radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.play_area {
-    margin: 20px 0;
-    padding: 10px;
-    border: 1px dashed #ccc;
-}
-
-.card_container {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    min_height: 100px; /* Keeps layout stable before cards are dealt */
-}
-
-/* You will generate these via JavaScript later */
-.card {
-    border: 1px solid #333;
-    border_radius: 5px;
-    width: 60px;
-    height: 90px;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    font_size: 24px;
+}
+
+/* MAIN CONTAINER */
+#game_container {
+    width: 90%;
+    max-width: 800px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+/* TITLE STYLING */
+h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    color: var(--gold-accent);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* PLAY AREAS */
+.play_area {
+    margin: 30px 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    border-left: 5px solid var(--gold-accent);
+}
+
+.play_area h2 {
+    font-weight: 300;
+    margin-top: 0;
+    color: #ccc;
+    font-size: 1.2rem;
+}
+
+/* CARD CONTAINER */
+.card_container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    min-height: 130px;
+    perspective: 1000px;
+}
+
+/* INDIVIDUAL CARD STYLING */
+.card {
+    position: relative;
+    width: 80px;
+    height: 120px;
     background: white;
+    border-radius: 8px;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+    
+    /* HANDLES SMOOTH SLIDING TRANSITIONS */
+    transition: transform 0.3s ease;
 }
 
+/* NEW CARD SPIN ANIMATION */
+.new_card_spin {
+    animation: flip_in 0.5s ease-out forwards;
+}
+
+@keyframes flip_in {
+    from {
+        opacity: 0;
+        transform: rotateY(90deg) translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: rotateY(0deg) translateX(0);
+    }
+}
+
+/* CARD SUIT COLORS */
+.card.red { color: #d63031; }
+
+.card.black { color: #2d3436; }
+
+/* HIDDEN DEALER CARD */
+.card.hidden {
+    background: #2d3436;
+    background-image: repeating-linear-gradient(45deg, #1e272e 25%, transparent 25%, transparent 50%, #1e272e 50%, #1e272e 75%, transparent 75%, transparent);
+    background-size: 10px 10px;
+    border: 2px solid white;
+    color: white;
+}
+
+/* MESSAGE BOARD */
+#message_board {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--gold-accent);
+}
+
+/* CONTROLS BUTTON AREA */
 #controls {
-    margin_top: 20px;
+    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
 }
 
+/* SHARED BUTTON STYLES */
 button {
-    padding: 10px 20px;
-    font_size: 16px;
-    margin: 0 5px;
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 50px;
     cursor: pointer;
+    transition: all 0.2s;
+}
+
+#deal_btn { background: var(--gold-accent); color: #2d3436; }
+
+#hit_btn { background: #00b894; color: white; }
+
+#stand_btn { background: #0984e3; color: white; }
+
+.reset_btn { background: transparent; border: 1px solid #ff7675; color: #ff7675; }
+
+button:hover:not(:disabled) {
+    transform: scale(1.05);
+    filter: brightness(1.2);
 }
 
 button:disabled {
-    opacity: 0.5;
+    opacity: 0.3;
     cursor: not-allowed;
-}
-
-.card.red {
-    color: #e74c3c; /* A nice poker red */
-}
-
-.card.black {
-    color: #2c3e50; /* A deep poker black */
-}
-
-.reset_btn {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    border_radius: 5px;
-}
-
-.reset_btn:hover {
-    background-color: #8a2419;
 }
