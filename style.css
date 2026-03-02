@@ -64,3 +64,14 @@ button:disabled {
 .card.black {
     color: #2c3e50; /* A deep poker black */
 }
+
+.reset_btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border_radius: 5px;
+}
+
+.reset_btn:hover {
+    background-color: #8a2419;
+}

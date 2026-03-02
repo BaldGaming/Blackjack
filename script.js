@@ -14,6 +14,7 @@ const message = document.getElementById('game_message');
 const deal_btn = document.getElementById('deal_btn');
 const hit_btn = document.getElementById('hit_btn');
 const stand_btn = document.getElementById('stand_btn');
+const reset_btn = document.getElementById('reset_btn');
 
 
 // -------------
@@ -198,6 +199,29 @@ function start_game() {
     save_game_state(deck, player_hand, dealer_hand, game_over);
 }
 
+function reset_game() {
+    // Clears LS
+    clear_game_state();
+
+    // Resets all global state variables
+    deck = [];
+    dealer_hand = [];
+    player_hand = [];
+    game_over = false;
+
+    // Reset the UI elements
+    message.textContent = 'Press "Deal" to start playing!';
+    player_score.textContent = "0";
+    dealer_score.textContent = "0";
+    player_cards.innerHTML = "";
+    dealer_cards.innerHTML = "";
+
+    // Reset button states
+    deal_btn.disabled = false;
+    hit_btn.disabled = true;
+    stand_btn.disabled = true;
+}
+
 function hit(hand) {
     if (game_over) return;
 
@@ -273,6 +297,7 @@ function final_result(p_score, d_score) {
 deal_btn.addEventListener('click', start_game);
 hit_btn.addEventListener('click', () => hit(player_hand));
 stand_btn.addEventListener('click', stand);
+reset_btn.addEventListener('click', reset_game);
 
 // Handles local storage
 window.onload = () => {
