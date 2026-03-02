@@ -1,0 +1,58 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+}
+
+#game_container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border_radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.play_area {
+    margin: 20px 0;
+    padding: 10px;
+    border: 1px dashed #ccc;
+}
+
+.card_container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    min_height: 100px; /* Keeps layout stable before cards are dealt */
+}
+
+/* You will generate these via JavaScript later */
+.card {
+    border: 1px solid #333;
+    border_radius: 5px;
+    width: 60px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font_size: 24px;
+    background: white;
+}
+
+#controls {
+    margin_top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    font_size: 16px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
