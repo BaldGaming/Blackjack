@@ -56,3 +56,11 @@ button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+.card.red {
+    color: #e74c3c; /* A nice poker red */
+}
+
+.card.black {
+    color: #2c3e50; /* A deep poker black */
+}

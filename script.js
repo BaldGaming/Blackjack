@@ -18,64 +18,27 @@ const stand_btn = document.getElementById('stand_btn');
 
 // -------------
 function create_deck() {
-    const deck = [
-        { suit: "hearts", value: "Ace" },
-        { suit: "hearts", value: 2 },
-        { suit: "hearts", value: 3 },
-        { suit: "hearts", value: 4 },
-        { suit: "hearts", value: 5 },
-        { suit: "hearts", value: 6 },
-        { suit: "hearts", value: 7 },
-        { suit: "hearts", value: 8 },
-        { suit: "hearts", value: 9 },
-        { suit: "hearts", value: 10 },
-        { suit: "hearts", value: "Jack" },
-        { suit: "hearts", value: "Queen" },
-        { suit: "hearts", value: "King" },
-
-        { suit: "diamonds", value: "Ace" },
-        { suit: "diamonds", value: 2 },
-        { suit: "diamonds", value: 3 },
-        { suit: "diamonds", value: 4 },
-        { suit: "diamonds", value: 5 },
-        { suit: "diamonds", value: 6 },
-        { suit: "diamonds", value: 7 },
-        { suit: "diamonds", value: 8 },
-        { suit: "diamonds", value: 9 },
-        { suit: "diamonds", value: 10 },
-        { suit: "diamonds", value: "Jack" },
-        { suit: "diamonds", value: "Queen" },
-        { suit: "diamonds", value: "King" },
-
-        { suit: "clubs", value: "Ace" },
-        { suit: "clubs", value: 2 },
-        { suit: "clubs", value: 3 },
-        { suit: "clubs", value: 4 },
-        { suit: "clubs", value: 5 },
-        { suit: "clubs", value: 6 },
-        { suit: "clubs", value: 7 },
-        { suit: "clubs", value: 8 },
-        { suit: "clubs", value: 9 },
-        { suit: "clubs", value: 10 },
-        { suit: "clubs", value: "Jack" },
-        { suit: "clubs", value: "Queen" },
-        { suit: "clubs", value: "King" },
-
-        { suit: "spades", value: "Ace" },
-        { suit: "spades", value: 2 },
-        { suit: "spades", value: 3 },
-        { suit: "spades", value: 4 },
-        { suit: "spades", value: 5 },
-        { suit: "spades", value: 6 },
-        { suit: "spades", value: 7 },
-        { suit: "spades", value: 8 },
-        { suit: "spades", value: 9 },
-        { suit: "spades", value: 10 },
-        { suit: "spades", value: "Jack" },
-        { suit: "spades", value: "Queen" },
-        { suit: "spades", value: "King" },
+    const suits = [
+        { name: "hearts", symbol: "♥" },
+        { name: "diamonds", symbol: "♦" },
+        { name: "clubs", symbol: "♣" },
+        { name: "spades", symbol: "♠" }
     ];
-    return deck;
+
+    const values = ["Ace", 2, 3, 4, 5, 6, 7, 8, 9, 10, "Jack", "Queen", "King"];
+    const new_deck = [];
+
+    suits.forEach(suit => {
+        values.forEach(value => {
+            new_deck.push({ 
+                suit: suit.name, 
+                symbol: suit.symbol, 
+                value: value 
+            });
+        });
+    });
+
+    return new_deck;
 }
 
 // Fisher-Yates Shuffle for randomizing deck.
@@ -126,10 +89,56 @@ function calculate_score(hand) {
     return sum;
 }
 
-// 
-function update_ui(p_score, d_score) {
-    player_score.textContent = p_score;
-    dealer_score.textContent = d_score;
+// This function updates the UI
+function update_ui() {
+    // Render Player Cards
+    player_cards.innerHTML = "";
+    player_hand.forEach(card => {
+        const color_class = (card.suit === "hearts" || card.suit === "diamonds") ? "red" : "black";
+        player_cards.innerHTML += `
+            <div class="card ${color_class}">
+                ${card.value}<br>${card.symbol}
+            </div>`;
+    });
+    player_score.textContent = calculate_score(player_hand);
+
+    // Render Dealer Cards
+    dealer_cards.innerHTML = "";
+    if (!game_over) {
+        if (dealer_hand.length > 0) {
+            const first_card = dealer_hand[0];
+            const color_class = (first_card.suit === "hearts" || first_card.suit === "diamonds") ? "red" : "black";
+            
+            dealer_cards.innerHTML += `
+                <div class="card ${color_class}">
+                    ${first_card.value}<br>${first_card.symbol}
+                </div>`;
+            dealer_cards.innerHTML += `<div class="card hidden">?</div>`;
+            
+            const first_card_val = get_card_value(first_card);
+            dealer_score.textContent = `${first_card_val} + ? = ?`;
+        }
+    } else {
+        dealer_hand.forEach(card => {
+            const color_class = (card.suit === "hearts" || card.suit === "diamonds") ? "red" : "black";
+            dealer_cards.innerHTML += `
+                <div class="card ${color_class}">
+                    ${card.value}<br>${card.symbol}
+                </div>`;
+        });
+        dealer_score.textContent = calculate_score(dealer_hand);
+    }
+}
+
+/**
+* Converts a card's face value into its numerical Blackjack point value.
+* * @param {Object} card - The card object from the deck (e.g., { suit: "hearts", value: "King" }).
+* @returns {number} The integer point value (Ace = 11, Face Cards = 10, Others = Face Value).
+*/
+function get_card_value(card) {
+    if (card.value === "Ace") return 11; 
+    if (["Jack", "Queen", "King"].includes(card.value)) return 10;
+    return card.value;
 }
 
 // Function for checking end condition
@@ -141,16 +150,13 @@ function check_end_condition(score) {
         return score > 21;
 }
 
-
 // -------------
 function start_game() {
-    // TODO: Reset hands, create/shuffle deck, deal initial two cards to each
-
     // lowers game over flag
     game_over = false;
 
     // Resets the deck and shuffles it
-    deck = create_deck(deck);
+    deck = create_deck();
     deck = shuffle_deck(deck);
 
     // Resets the scores
@@ -158,57 +164,62 @@ function start_game() {
     dealer_hand = [];
 
     // Deals two cards for each party
-    hit(player_hand);
-    hit(dealer_hand);
-    hit(player_hand);
-    hit(dealer_hand);
+    player_hand.push(deck.pop());
+    dealer_hand.push(deck.pop());
+    player_hand.push(deck.pop());
+    dealer_hand.push(deck.pop());
 
     // Enable/Disable buttons
     deal_btn.disabled = true;
     hit_btn.disabled = false;
     stand_btn.disabled = false;
     message.textContent = "Hit or Stand?";
+
+    update_ui();
+    // Updates local storage
+    save_game_state(deck, player_hand, dealer_hand, game_over);
 }
 
 function hit(hand) {
     if (game_over) return;
 
     // pops the last card from the deck and pushes it into a hand
-    const card = deck.pop();
-    hand.push(card);
+    hand.push(deck.pop());
 
-    let cur_p_score = calculate_score(player_hand);
-    let cur_d_score = calculate_score(dealer_hand);
-
-    // checks for game ending conditions
-    if (check_end_condition(calculate_score(hand))) {
-        const final_p_score = cur_p_score;
-        const final_d_score = cur_d_score;
-        final_result(final_p_score, final_d_score);
-
-        return;
-    }
+    // gets the latest scores
+    const p_score = calculate_score(player_hand);
+    const d_score = calculate_score(dealer_hand);
 
     // updates the UI
-    update_ui(cur_p_score, cur_d_score);
+    update_ui();
 
-    return hand;
+    // checks for game ending conditions
+    if (calculate_score(hand) > 21) {
+        final_result(p_score, d_score);
+    }
+
+    // Updates local storage
+    save_game_state(deck, player_hand, dealer_hand, game_over);
 }
 
 function stand() {
     if (game_over) return;
-    // TODO: Dealer reveals hidden card, hits until score >= 17, then determine winner
 
+    game_over = true;
 
+    // continuously hits the Dealer until his score is over 17
     while (calculate_score(dealer_hand) < 17) {
-        hit(dealer_hand);
+        dealer_hand.push(deck.pop());
     }
 
     const final_p_score = calculate_score(player_hand);
     const final_d_score = calculate_score(dealer_hand);
 
+    update_ui();
     final_result(final_p_score, final_d_score);
-    return;
+
+    // Updates local storage
+    save_game_state(deck, player_hand, dealer_hand, game_over);
 }
 
 // This function determines the outcome of the game
@@ -237,11 +248,35 @@ function final_result(p_score, d_score) {
         message.textContent = `It's a Push! Both have ${p_score}.`;
 
     // message.textContent = 'Press "Deal" to start playing!';
-
-    return;
+    update_ui();
 }
 
 // Event listeners
 deal_btn.addEventListener('click', start_game);
 hit_btn.addEventListener('click', () => hit(player_hand));
 stand_btn.addEventListener('click', stand);
+
+// Handles local storage
+window.onload = () => {
+    const saved_state = get_game_state();
+    
+    if (saved_state) {
+        deck = saved_state.deck;
+        player_hand = saved_state.player_hand;
+        dealer_hand = saved_state.dealer_hand;
+        game_over = saved_state.game_over;
+        
+        // If the game was already over, make sure buttons are correct
+        if (game_over) {
+            deal_btn.disabled = false;
+            hit_btn.disabled = true;
+            stand_btn.disabled = true;
+        } else {
+            deal_btn.disabled = true;
+            hit_btn.disabled = false;
+            stand_btn.disabled = false;
+        }
+        
+        update_ui();
+    }
+};
